@@ -9,6 +9,34 @@ import pandas as pd
 from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
 
+import streamlit as st
+from auth.login import login
+
+# session setup
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+    st.session_state.role = None
+    
+    # LOGIN PAGE
+if not st.session_state.logged_in:
+    st.title("🔐 Login")
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        role = login(username, password)
+
+        if role:
+            st.session_state.logged_in = True
+            st.session_state.role = role
+            st.success(f"Logged in as {role}")
+            st.rerun()
+        else:
+            st.error("Invalid credentials")
+
+    st.stop()
+
 st.title("Customer Analytics Dashboard")
 
 # upload first
@@ -75,4 +103,3 @@ if uploaded_file:
         prediction = predict_sales(f_day, f_month, f_year)
         st.success(f"Predicted Sales: ₹ {int(prediction)}")
         
-from auth.login import login
