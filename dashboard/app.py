@@ -40,17 +40,6 @@ if not st.session_state.logged_in:
                 
         elif option == "Sign Up":
             st.warning("Signup disabled in cloud version. Use demo credentials below.")
-            
-    st.info("""
-            Demo Credentials:
-            Admin:
-            username: admin  
-            password: admin123  
-            
-            User:
-            username: user  
-            password: user123  
-    """)
     
     st.stop()
 
