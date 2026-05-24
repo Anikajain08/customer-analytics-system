@@ -89,18 +89,7 @@ if uploaded_file:
         if isinstance(recs, str):
             st.error(recs)
         else:
-            st.write(recs)
-    if customer_id:
-        recs = recommend_products(df, customer_id)
-
-    if st.button("Get Recommendations"):
-        recs = recommend_products(df, customer_id)
-        st.write(recs)
-    
-    if isinstance(recs, str):
-        st.error(recs)
-    else:
-        st.write(recs) 
+            st.write(recs) 
     
     from src.demand_prediction import predict_demand
     st.subheader("📦 Inventory Demand Prediction")
