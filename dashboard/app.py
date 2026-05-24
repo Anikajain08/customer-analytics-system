@@ -1,0 +1,71 @@
+import streamlit as st
+import pandas as pd
+
+from src.segmentation import segment_customers
+from src.churn_prediction import predict_churn
+
+st.title("Customer Analytics Dashboard")
+
+# upload first
+uploaded_file = st.file_uploader("Upload Dataset")
+
+if uploaded_file:
+
+    # read file
+    if uploaded_file.name.endswith('.csv'):
+        df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
+    else:
+        df = pd.read_excel(uploaded_file)
+    
+    st.write("Sample Customer IDs:", list(df['CustomerID'].dropna().astype(int).unique())[:10])
+        
+    # show raw data
+    st.write("Raw Data", df.head())
+
+    # KPIs
+    st.subheader("📊 Key Metrics")
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Total Revenue", int(df['Quantity'].mul(df['UnitPrice']).sum()))
+    col2.metric("Total Customers", df['CustomerID'].nunique())
+    col3.metric("Total Orders", df['InvoiceNo'].nunique())
+
+    # segmentation + churn
+    rfm = segment_customers(df)
+    rfm = predict_churn(rfm)
+
+    st.subheader("📋 Customer Segments")
+    st.write(rfm.head())    
+    
+    from src.recommendation import recommend_products
+    st.subheader("🎁 Product Recommendation")
+    customer_id = st.number_input("Enter Customer ID", step=1)
+    
+    if customer_id:
+        recs = recommend_products(customer_id)
+
+    if isinstance(recs, str):
+        st.warning(recs)
+    else:
+        st.write("Recommended Products:")
+        st.dataframe(recs)  
+    
+    from src.demand_prediction import predict_demand
+    st.subheader("📦 Inventory Demand Prediction")
+    day = st.number_input("Day", min_value=1, max_value=31, step=1)
+    month = st.number_input("Month", min_value=1, max_value=12, step=1)
+    year = st.number_input("Year", min_value=2010, max_value=2025, step=1)
+    
+    if st.button("Predict Demand"):
+        demand = predict_demand(day, month, year)
+        st.success(f"Predicted Demand: {int(demand)} units")
+    
+    from src.forecasting import predict_sales
+    st.subheader("🔮 Sales Forecasting")
+    f_day = st.number_input("Forecast Day", min_value=1, max_value=31, step=1)
+    f_month = st.number_input("Forecast Month", min_value=1, max_value=12, step=1)
+    f_year = st.number_input("Forecast Year", min_value=2010, max_value=2030, step=1)
+    
+    if st.button("Predict Sales"):
+        prediction = predict_sales(f_day, f_month, f_year)
+        st.success(f"Predicted Sales: ₹ {int(prediction)}")
