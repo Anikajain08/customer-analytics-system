@@ -11,31 +11,49 @@ from src.churn_prediction import predict_churn
 
 import streamlit as st
 from auth.login import login
+from src.database import add_user
 
-# session setup
+# session state
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
     st.session_state.role = None
     
-    # LOGIN PAGE
-if not st.session_state.logged_in:
-    st.title("🔐 Login")
+    if not st.session_state.logged_in:
 
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+    st.title("🔐 Authentication")
 
-    if st.button("Login"):
-        role = login(username, password)
+    option = st.radio("Select Option", ["Login", "Sign Up"])
 
-        if role:
-            st.session_state.logged_in = True
-            st.session_state.role = role
-            st.success(f"Logged in as {role}")
-            st.rerun()
-        else:
-            st.error("Invalid credentials")
+    # 🔑 LOGIN
+    if option == "Login":
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+
+        if st.button("Login"):
+            role = login(username, password)
+
+            if role:
+                st.session_state.logged_in = True
+                st.session_state.role = role
+                st.success(f"Welcome {username} ({role})")
+                st.rerun()
+            else:
+                st.error("Invalid credentials")
+
+    # 📝 SIGNUP
+    elif option == "Sign Up":
+        new_user = st.text_input("New Username")
+        new_pass = st.text_input("New Password", type="password")
+
+        if st.button("Create Account"):
+            try:
+                add_user(new_user, new_pass, "user")
+                st.success("Account created! Please login.")
+            except:
+                st.error("User already exists")
 
     st.stop()
+
 
 st.title("Customer Analytics Dashboard")
 
