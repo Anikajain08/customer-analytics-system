@@ -1,11 +1,8 @@
 import sqlite3
 
-# create connection
 def create_connection():
-    conn = sqlite3.connect("users.db")
-    return conn
+    return sqlite3.connect("users.db")
 
-# create table
 def create_table():
     conn = create_connection()
     cursor = conn.cursor()
@@ -21,17 +18,19 @@ def create_table():
     conn.commit()
     conn.close()
 
-# add user
 def add_user(username, password, role):
     conn = create_connection()
     cursor = conn.cursor()
 
-    cursor.execute("INSERT INTO users VALUES (?, ?, ?)", (username, password, role))
+    try:
+        cursor.execute("INSERT INTO users VALUES (?, ?, ?)", (username, password, role))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+    finally:
+        conn.close()
 
-    conn.commit()
-    conn.close()
-
-# get user
 def get_user(username):
     conn = create_connection()
     cursor = conn.cursor()
@@ -41,10 +40,3 @@ def get_user(username):
 
     conn.close()
     return user
-
-from src.database import create_table, add_user
-
-create_table()
-
-add_user("admin", "admin123", "admin")
-add_user("user", "user123", "user")

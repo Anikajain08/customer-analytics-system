@@ -8,22 +8,21 @@ import pandas as pd
 
 from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
-
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import streamlit as st
 from auth.login import login
 from src.database import add_user
 
+from src.database import create_table
+
+create_table()
+# session state
 # session state
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
     st.session_state.role = None
-    
-    if not st.session_state.logged_in:
-        st.title("🔐 Authentication")
+
+# ✅ THIS MUST BE OUTSIDE
+if not st.session_state.logged_in:
+    st.title("🔐 Authentication")
 
     option = st.radio("Select Option", ["Login", "Sign Up"])
 
@@ -49,10 +48,10 @@ if "logged_in" not in st.session_state:
         new_pass = st.text_input("New Password", type="password")
 
         if st.button("Create Account"):
-            try:
-                add_user(new_user, new_pass, "user")
+            success = add_user(new_user, new_pass, "user")
+            if success:
                 st.success("Account created! Please login.")
-            except:
+            else:
                 st.error("User already exists")
 
     st.stop()
