@@ -85,13 +85,11 @@ if uploaded_file:
     customer_id = st.number_input("Enter Customer ID", step=1)
     
     if st.button("Get Recommendations"):
-    recs = recommend_products(df, customer_id)
-
-    if isinstance(recs, str):
-        st.error(recs)
-    else:
-        st.write(recs)
-    
+        recs = recommend_products(df, customer_id)
+        if isinstance(recs, str):
+            st.error(recs)
+        else:
+            st.write(recs)
     if customer_id:
         recs = recommend_products(df, customer_id)
 
