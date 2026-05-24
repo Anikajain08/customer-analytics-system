@@ -1,44 +1,31 @@
 import pandas as pd
-from pathlib import Path
+from sklearn.metrics.pairwise import cosine_similarity
 
-# load data (paths resolved relative to project root)
-BASE_DIR = Path(__file__).resolve().parents[1]
-data_dir = BASE_DIR / 'data'
+def recommend_products(df, customer_id, top_n=5):
 
-customer_product_path = data_dir / 'customer_product_matrix.csv'
-similarity_path = data_dir / 'similarity_matrix.csv'
+    df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
 
-if not customer_product_path.exists():
-    raise FileNotFoundError(f"customer_product_matrix.csv not found at {customer_product_path}")
-if not similarity_path.exists():
-    raise FileNotFoundError(f"similarity_matrix.csv not found at {similarity_path}")
+    # create customer-product matrix
+    matrix = df.pivot_table(
+        index='CustomerID',
+        columns='StockCode',
+        values='TotalPrice',
+        aggfunc='sum',
+        fill_value=0
+    )
 
-customer_product = pd.read_csv(customer_product_path, index_col=0)
-similarity_df = pd.read_csv(similarity_path, index_col=0)
+    # compute similarity
+    similarity = cosine_similarity(matrix)
+    similarity_df = pd.DataFrame(similarity, index=matrix.index, columns=matrix.index)
 
-# convert index/columns to int (handles float-like strings like '12346.0')
-try:
-    customer_product.index = pd.to_numeric(customer_product.index, errors='raise').astype(int)
-    similarity_df.index = pd.to_numeric(similarity_df.index, errors='raise').astype(int)
-    similarity_df.columns = pd.to_numeric(similarity_df.columns, errors='raise').astype(int)
-except Exception as e:
-    raise ValueError(f"Failed to convert index/columns to int: {e}")
+    if customer_id not in similarity_df.index:
+        return f"Customer ID {customer_id} not found"
 
-def recommend_products(customer_id, top_n=5):
-    try:
-        customer_id = int(customer_id)
+    # find similar customers
+    similar_users = similarity_df.loc[customer_id].sort_values(ascending=False)[1:6]
+    similar_ids = similar_users.index
 
-        if customer_id not in similarity_df.index:
-            return f"Customer ID {customer_id} not found"
+    # recommend products
+    recommended = matrix.loc[similar_ids].sum().sort_values(ascending=False)
 
-        # find similar customers
-        similar_customers = similarity_df.loc[customer_id].sort_values(ascending=False)[1:6]
-        similar_ids = similar_customers.index
-
-        # get recommendations
-        recommended_products = customer_product.loc[similar_ids].sum().sort_values(ascending=False)
-
-        return recommended_products.head(top_n)
-
-    except Exception as e:
-        return f"Error: {e}"
+    return recommended.head(top_n)

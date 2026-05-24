@@ -1,5 +1,3 @@
-from src.database import create_table
-create_table()
 import sys
 import os
 
@@ -42,20 +40,20 @@ if not st.session_state.logged_in:
                 st.rerun()
             else:
                 st.error("Invalid credentials")
-
-    # 📝 SIGNUP
-    elif option == "Sign Up":
-        new_user = st.text_input("New Username")
-        new_pass = st.text_input("New Password", type="password")
-
-        if st.button("Create Account"):
-            success = add_user(new_user, new_pass, "user")
-            if success:
-                st.success("Account created! Please login.")
-            else:
-                st.error("User already exists")
-
-    st.stop()
+                
+        elif option == "Sign Up":
+            st.warning("Signup disabled in cloud version. Use demo credentials below.")
+            
+    st.info("""
+            Demo Credentials:
+            Admin:
+            username: admin  
+            password: admin123  
+            
+            User:
+            username: user  
+            password: user123  
+    """)
 
 
 st.title("Customer Analytics Dashboard")

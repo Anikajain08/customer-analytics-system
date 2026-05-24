@@ -1,8 +1,11 @@
 def login(username, password):
-    user = get_user(username)
-    print("DEBUG USER:", user)
+    users = {
+        "admin": {"password": "admin123", "role": "admin"},
+        "user": {"password": "user123", "role": "user"}
+    }
 
-    if user and user[1] == password:
-        return user[2]
+    if username in users and users[username]["password"] == password:
+        return users[username]["role"]
 
     return None
+
