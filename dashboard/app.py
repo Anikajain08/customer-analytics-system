@@ -11,9 +11,6 @@ from src.churn_prediction import predict_churn
 from auth.login import login
 from src.database import add_user
 
-
-
-# session state
 # session state
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -54,6 +51,8 @@ if not st.session_state.logged_in:
             username: user  
             password: user123  
     """)
+    
+    st.stop()
 
 
 st.title("Customer Analytics Dashboard")
