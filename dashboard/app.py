@@ -55,8 +55,11 @@ if uploaded_file:
     if uploaded_file.name.endswith('.csv'):
         df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
     else:
-        df = pd.read_excel(uploaded_file)
-    
+        @st.cache_data
+        def load_data(file):
+            return pd.read_excel(file)
+        df = load_data(uploaded_file)
+      
     st.write("Sample Customer IDs:", list(df['CustomerID'].dropna().astype(int).unique())[:10])
         
     # show raw data
@@ -81,10 +84,20 @@ if uploaded_file:
     st.subheader("🎁 Product Recommendation")
     customer_id = st.number_input("Enter Customer ID", step=1)
     
-    if customer_id:
-        recs = recommend_products(customer_id)
-
+    if st.button("Get Recommendations"):
     recs = recommend_products(df, customer_id)
+
+    if isinstance(recs, str):
+        st.error(recs)
+    else:
+        st.write(recs)
+    
+    if customer_id:
+        recs = recommend_products(df, customer_id)
+
+    if st.button("Get Recommendations"):
+        recs = recommend_products(df, customer_id)
+        st.write(recs)
     
     if isinstance(recs, str):
         st.error(recs)
