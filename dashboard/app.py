@@ -1,3 +1,5 @@
+from src.database import create_table
+create_table()
 import sys
 import os
 
@@ -11,9 +13,8 @@ from src.churn_prediction import predict_churn
 from auth.login import login
 from src.database import add_user
 
-from src.database import create_table
 
-create_table()
+
 # session state
 # session state
 if "logged_in" not in st.session_state:
