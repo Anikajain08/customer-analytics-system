@@ -9,6 +9,10 @@ import pandas as pd
 from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
 
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import streamlit as st
 from auth.login import login
 from src.database import add_user
