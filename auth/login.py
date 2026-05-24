@@ -1,10 +1,9 @@
-def login(username, password):
-    users = {
-        "admin": {"password": "admin123", "role": "admin"},
-        "user": {"password": "user123", "role": "user"}
-    }
+from src.database import get_user
 
-    if username in users and users[username]["password"] == password:
-        return users[username]["role"]
-    
+def login(username, password):
+    user = get_user(username)
+
+    if user and user[1] == password:
+        return user[2]
+
     return None
