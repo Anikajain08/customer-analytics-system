@@ -9,8 +9,8 @@ import joblib
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # correct paths
-kmeans = joblib.load(os.path.join(BASE_DIR, 'models', 'kmeans_model.pkl'))
-scaler = joblib.load(os.path.join(BASE_DIR, 'models', 'scaler.pkl'))
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 
 def segment_customers(df):
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
@@ -26,10 +26,9 @@ def segment_customers(df):
 
     rfm.columns = ['Recency', 'Frequency', 'Monetary']
 
-    # scale
-    rfm_scaled = scaler.transform(rfm)
+    scaler = StandardScaler()
+    rfm_scaled = scaler.fit_transform(rfm)
 
-    # predict
-    rfm['Cluster'] = kmeans.predict(rfm_scaled)
-
+    kmeans = KMeans(n_clusters=4, random_state=42)
+    rfm['Cluster'] = kmeans.fit_predict(rfm_scaled)
     return rfm
