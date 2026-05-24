@@ -19,8 +19,7 @@ if "logged_in" not in st.session_state:
     st.session_state.role = None
     
     if not st.session_state.logged_in:
-
-    st.title("🔐 Authentication")
+        st.title("🔐 Authentication")
 
     option = st.radio("Select Option", ["Login", "Sign Up"])
 
