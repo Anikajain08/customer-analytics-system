@@ -84,11 +84,12 @@ if uploaded_file:
     if customer_id:
         recs = recommend_products(customer_id)
 
+    recs = recommend_products(df, customer_id)
+    
     if isinstance(recs, str):
-        st.warning(recs)
+        st.error(recs)
     else:
-        st.write("Recommended Products:")
-        st.dataframe(recs)  
+        st.write(recs) 
     
     from src.demand_prediction import predict_demand
     st.subheader("📦 Inventory Demand Prediction")
