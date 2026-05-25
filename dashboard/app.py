@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
@@ -64,90 +65,53 @@ if uploaded_file is not None:
     col3.metric("👤 Customers", df['CustomerID'].nunique())
     col4.metric("📈 Avg Value", f"₹{df['TotalPrice'].mean():.2f}")
     
-    import plotly.express as px
-    st.markdown("Charts Section")
-    # 🔥 CHARTS SECTION STARTS HERE
-    # prepare data
+    st.markdown("---")
+    
+    # 📊 Data Prep
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
     df['Month'] = df['InvoiceDate'].dt.to_period('M').astype(str)
 
-    monthly = df.groupby('Month')['TotalPrice'].sum().reset_index()
-    country = df.groupby('Country')['TotalPrice'].sum().reset_index()
+monthly = df.groupby('Month')['TotalPrice'].sum().reset_index()
+country = df.groupby('Country')['TotalPrice'].sum().reset_index()
 
-    # create charts
-    fig1 = px.line(monthly, x='Month', y='TotalPrice', title="Monthly Sales")
-    fig2 = px.bar(country.head(10), x='Country', y='TotalPrice', title="Sales by Country")
+# 📈 Charts
+fig1 = px.line(monthly, x='Month', y='TotalPrice', title="Monthly Sales")
+fig2 = px.bar(country.head(10), x='Country', y='TotalPrice', title="Sales by Country")
 
-    # 🔥 GRID LAYOUT (IMPORTANT)
-    col1, col2 = st.columns([2,1])
+fig1.update_layout(template="plotly_dark")
+fig2.update_layout(template="plotly_dark")
 
-    with col1:
-        st.plotly_chart(fig1, use_container_width=True)
+# 🔥 Layout (Main + Side Panel)
+col1, col2 = st.columns([3,1])
 
-    with col2:
-        st.plotly_chart(fig2, use_container_width=True)
-    
-    rfm = segment_customers(df)
-    
-    if 'Segment' in rfm.columns:
-        segment = rfm['Segment'].value_counts().reset_index()
-        segment.columns = ['Segment', 'Count']
-        fig3 = px.pie(segment, names='Segment', values='Count',
+with col1:
+    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
+
+with col2:
+    st.markdown("### 👤 Profile")
+    st.markdown("""
+    <div style="background:#1c1f26;padding:15px;border-radius:10px;">
+        <h4>User: Admin</h4>
+        <p>Role: Analyst</p>
+        <p>Status: Active</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+rfm = segment_customers(df)
+
+if 'Segment' in rfm.columns:
+    segment = rfm['Segment'].value_counts().reset_index()
+    segment.columns = ['Segment', 'Count']
+
+    fig3 = px.pie(segment, names='Segment', values='Count',
                   title="Customer Segmentation")
-        st.plotly_chart(fig3, use_container_width=True)
-    
-    else:
-        st.warning("⚠️ Segment column not found")
-        
-    # show raw data
-    st.write("Raw Data", df.head())
 
-    # KPIs
-    st.subheader("📊 Key Metrics")
-    col1, col2, col3 = st.columns(3)
+    fig3.update_layout(template="plotly_dark")
 
-    col1.metric("Total Revenue", int(df['Quantity'].mul(df['UnitPrice']).sum()))
-    col2.metric("Total Customers", df['CustomerID'].nunique())
-    col3.metric("Total Orders", df['InvoiceNo'].nunique())
+    st.plotly_chart(fig3, use_container_width=True)
 
-    # segmentation + churn
-    rfm = segment_customers(df)
-    rfm = predict_churn(rfm)
-
-    st.subheader("📋 Customer Segments")
-    st.write(rfm.head())    
+else:
+    st.warning("⚠️ Segment column not found")
     
-    from src.recommendation import recommend_products
-    st.subheader("🎁 Product Recommendation")
-    customer_id = st.number_input("Enter Customer ID", step=1)
-    
-    if st.button("Get Recommendations",key="rec_button"):
-        recs = recommend_products(df, customer_id)
-        if isinstance(recs, str):
-            st.error(recs)
-        else:
-            st.write(recs) 
-    
-    from src.demand_prediction import predict_demand
-    st.subheader("📦 Inventory Demand Prediction")
-    day = st.number_input("Day", min_value=1, max_value=31, step=1)
-    month = st.number_input("Month", min_value=1, max_value=12, step=1)
-    year = st.number_input("Year", min_value=2010, max_value=20230, step=1)
-    
-    if st.button("Predict Demand"):
-        demand = predict_demand(df)
-        st.write(demand)
-    
-    from src.forecasting import predict_sales
-    st.subheader("🔮 Sales Forecasting")
-    f_day = st.number_input("Forecast Day", min_value=1, max_value=31, step=1)
-    f_month = st.number_input("Forecast Month", min_value=1, max_value=12, step=1)
-    f_year = st.number_input("Forecast Year", min_value=2010, max_value=2030, step=1)
-    
-    if st.button("Predict Sales"):
-        st.subheader("📈 Sales Forecast")
-    
-    if st.button("Predict Sales", key="forecast_button"):
-        prediction = predict_sales(df)
-        st.write(prediction)
         
