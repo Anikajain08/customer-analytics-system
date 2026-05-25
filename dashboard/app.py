@@ -98,8 +98,6 @@ if uploaded_file is not None:
     
     else:
         st.warning("⚠️ Segment column not found")
-      
-    st.write("Sample Customer IDs:", list(df['CustomerID'].dropna().astype(int).unique())[:10])
         
     # show raw data
     st.write("Raw Data", df.head())
