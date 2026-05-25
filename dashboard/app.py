@@ -1,3 +1,4 @@
+
 import sys
 import os
 
@@ -43,22 +44,58 @@ if not st.session_state.logged_in:
     
     st.stop()
 
-
+st.cache_data.clear()
 st.title("Customer Analytics Dashboard")
 
 # upload first
 uploaded_file = st.file_uploader("Upload Dataset")
 
-if uploaded_file:
+if uploaded_file is not None:
+    df = pd.read_excel(uploaded_file) 
 
-    # read file
-    if uploaded_file.name.endswith('.csv'):
-        df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
-    else:
-        @st.cache_data
-        def load_data(file):
-            return pd.read_excel(file)
-        df = load_data(uploaded_file)
+    # create TotalPrice
+    df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
+
+    st.success("✅ Data uploaded successfully")
+    st.title("📊 Customer Sales Dashboard")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("💰 Total Sales", f"₹{df['TotalPrice'].sum():,.0f}")
+    col2.metric("📦 Orders", df['InvoiceNo'].nunique())
+    col3.metric("👤 Customers", df['CustomerID'].nunique())
+    col4.metric("📈 Avg Value", f"₹{df['TotalPrice'].mean():.2f}")
+    
+    import plotly.express as px
+    st.markdown("Charts Section")
+    # 🔥 CHARTS SECTION STARTS HERE
+    # prepare data
+    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
+    df['Month'] = df['InvoiceDate'].dt.to_period('M').astype(str)
+
+    monthly = df.groupby('Month')['TotalPrice'].sum().reset_index()
+    country = df.groupby('Country')['TotalPrice'].sum().reset_index()
+
+    # create charts
+    fig1 = px.line(monthly, x='Month', y='TotalPrice', title="Monthly Sales")
+    fig2 = px.bar(country.head(10), x='Country', y='TotalPrice', title="Sales by Country")
+
+    # 🔥 GRID LAYOUT (IMPORTANT)
+    col1, col2 = st.columns([2,1])
+
+    with col1:
+        st.plotly_chart(fig1, use_container_width=True)
+
+    with col2:
+        st.plotly_chart(fig2, use_container_width=True)
+    
+    rfm = segment_customers(df)
+    
+    segment = rfm['Segment'].value_counts().reset_index()
+    segment.columns = ['Segment', 'Count']
+    
+    fig3 = px.pie(segment, names='Segment', values='Count',
+              title="👥 Customer Segmentation")
+    st.plotly_chart(fig3, use_container_width=True)
       
     st.write("Sample Customer IDs:", list(df['CustomerID'].dropna().astype(int).unique())[:10])
         
@@ -108,6 +145,9 @@ if uploaded_file:
     f_year = st.number_input("Forecast Year", min_value=2010, max_value=2030, step=1)
     
     if st.button("Predict Sales"):
+        st.subheader("📈 Sales Forecast")
+    
+    if st.button("Predict Sales", key="forecast_button"):
         prediction = predict_sales(df)
         st.write(prediction)
         
