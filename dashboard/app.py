@@ -108,6 +108,6 @@ if uploaded_file:
     f_year = st.number_input("Forecast Year", min_value=2010, max_value=2030, step=1)
     
     if st.button("Predict Sales"):
-        prediction = predict_sales(f_day, f_month, f_year)
-        st.success(f"Predicted Sales: ₹ {int(prediction)}")
+        prediction = predict_sales(df)
+        st.write(prediction)
         
