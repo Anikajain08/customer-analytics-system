@@ -95,11 +95,11 @@ if uploaded_file:
     st.subheader("📦 Inventory Demand Prediction")
     day = st.number_input("Day", min_value=1, max_value=31, step=1)
     month = st.number_input("Month", min_value=1, max_value=12, step=1)
-    year = st.number_input("Year", min_value=2010, max_value=2025, step=1)
+    year = st.number_input("Year", min_value=2010, max_value=20230, step=1)
     
     if st.button("Predict Demand"):
-        demand = predict_demand(day, month, year)
-        st.success(f"Predicted Demand: {int(demand)} units")
+        demand = predict_demand(df)
+        st.write(demand)
     
     from src.forecasting import predict_sales
     st.subheader("🔮 Sales Forecasting")

@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
+@st.cache_data
 def recommend_products(df, customer_id, top_n=5):
 
     df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
