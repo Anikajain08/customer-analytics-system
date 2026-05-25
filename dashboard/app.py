@@ -87,14 +87,23 @@ if uploaded_file is not None:
     with col2:
         st.plotly_chart(fig2, use_container_width=True)
     
+
     rfm = segment_customers(df)
+    # ✅ SAFE SEGMENTATION BLOCK (ADD HERE)
+    if 'Segment' in rfm.columns:
+        segment = rfm['Segment'].value_counts().reset_index()
+        segment.columns = ['Segment', 'Count']
+        
+        fig3 = px.pie(segment, names='Segment', values='Count',
+                  title="Customer Segmentation")
+        st.plotly_chart(fig3, use_container_width=True)
     
-    segment = rfm['Segment'].value_counts().reset_index()
-    segment.columns = ['Segment', 'Count']
-    
-    fig3 = px.pie(segment, names='Segment', values='Count',
-              title="👥 Customer Segmentation")
-    st.plotly_chart(fig3, use_container_width=True)
+    else:
+        st.warning("⚠️ Segment column not found")
+        
+        fig3 = px.pie(segment, names='Segment', values='Count',
+                  title="Customer Segmentation")
+        st.plotly_chart(fig3, use_container_width=True)
       
     st.write("Sample Customer IDs:", list(df['CustomerID'].dropna().astype(int).unique())[:10])
         
