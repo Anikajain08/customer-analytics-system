@@ -94,11 +94,10 @@ if uploaded_file is not None:
         segment.columns = ['Segment', 'Count']
         fig3 = px.pie(segment, names='Segment', values='Count',
                   title="Customer Segmentation")
+        st.plotly_chart(fig3, use_container_width=True)
     
-    st.plotly_chart(fig3, use_container_width=True)
-
-else:
-    st.warning("⚠️ Segment column not found")
+    else:
+        st.warning("⚠️ Segment column not found")
       
     st.write("Sample Customer IDs:", list(df['CustomerID'].dropna().astype(int).unique())[:10])
         
