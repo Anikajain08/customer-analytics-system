@@ -70,48 +70,48 @@ if uploaded_file is not None:
     # 📊 Data Prep
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
     df['Month'] = df['InvoiceDate'].dt.to_period('M').astype(str)
-
-monthly = df.groupby('Month')['TotalPrice'].sum().reset_index()
-country = df.groupby('Country')['TotalPrice'].sum().reset_index()
-
-# 📈 Charts
-fig1 = px.line(monthly, x='Month', y='TotalPrice', title="Monthly Sales")
-fig2 = px.bar(country.head(10), x='Country', y='TotalPrice', title="Sales by Country")
-
-fig1.update_layout(template="plotly_dark")
-fig2.update_layout(template="plotly_dark")
-
-# 🔥 Layout (Main + Side Panel)
-col1, col2 = st.columns([3,1])
-
-with col1:
-    st.plotly_chart(fig1, use_container_width=True)
-    st.plotly_chart(fig2, use_container_width=True)
-
-with col2:
-    st.markdown("### 👤 Profile")
-    st.markdown("""
-    <div style="background:#1c1f26;padding:15px;border-radius:10px;">
-        <h4>User: Admin</h4>
-        <p>Role: Analyst</p>
-        <p>Status: Active</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-rfm = segment_customers(df)
-
-if 'Segment' in rfm.columns:
-    segment = rfm['Segment'].value_counts().reset_index()
-    segment.columns = ['Segment', 'Count']
-
-    fig3 = px.pie(segment, names='Segment', values='Count',
+    
+    monthly = df.groupby('Month')['TotalPrice'].sum().reset_index()
+    country = df.groupby('Country')['TotalPrice'].sum().reset_index()
+    
+    # 📈 Charts
+    fig1 = px.line(monthly, x='Month', y='TotalPrice', title="Monthly Sales")
+    fig2 = px.bar(country.head(10), x='Country', y='TotalPrice', title="Sales by Country")
+    
+    fig1.update_layout(template="plotly_dark")
+    fig2.update_layout(template="plotly_dark")
+    
+    # 🔥 Layout (Main + Side Panel)
+    col1, col2 = st.columns([3,1])
+    
+    with col1:
+        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True)
+    
+    with col2:
+        st.markdown("### 👤 Profile")
+        st.markdown("""
+                    <div style="background:#1c1f26;padding:15px;border-radius:10px;">
+                    <h4>User: Admin</h4>
+                    <p>Role: Analyst</p>
+                    <p>Status: Active</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+    
+    rfm = segment_customers(df)
+    
+    if 'Segment' in rfm.columns:
+        segment = rfm['Segment'].value_counts().reset_index()
+        segment.columns = ['Segment', 'Count']
+        
+        fig3 = px.pie(segment, names='Segment', values='Count',
                   title="Customer Segmentation")
-
-    fig3.update_layout(template="plotly_dark")
-
-    st.plotly_chart(fig3, use_container_width=True)
-
-else:
-    st.warning("⚠️ Segment column not found")
+        
+        fig3.update_layout(template="plotly_dark")
+        
+        st.plotly_chart(fig3, use_container_width=True)
+    
+    else:
+        st.warning("⚠️ Segment column not found")
     
         
