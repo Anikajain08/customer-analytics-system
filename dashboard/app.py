@@ -10,7 +10,7 @@ import pandas as pd
 from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
 from auth.login import login
-from src.database import add_user
+from database import add_user
 
 # session state
 if "logged_in" not in st.session_state:
