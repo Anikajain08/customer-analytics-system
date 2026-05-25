@@ -13,22 +13,19 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
 def segment_customers(df):
-    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
-    df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
+    import pandas as pd
 
-    snapshot_date = df['InvoiceDate'].max()
+    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
 
     rfm = df.groupby('CustomerID').agg({
-        'InvoiceDate': lambda x: (snapshot_date - x.max()).days,
+        'InvoiceDate': lambda x: (x.max() - x.min()).days,
         'InvoiceNo': 'count',
         'TotalPrice': 'sum'
-    })
+    }).reset_index()
 
-    rfm.columns = ['Recency', 'Frequency', 'Monetary']
+    rfm.columns = ['CustomerID', 'Recency', 'Frequency', 'Monetary']
 
-    scaler = StandardScaler()
-    rfm_scaled = scaler.fit_transform(rfm)
-
-    kmeans = KMeans(n_clusters=4, random_state=42)
-    rfm['Cluster'] = kmeans.fit_predict(rfm_scaled)
+    # 🔥 SIMPLE SEGMENTATION
+    rfm['Segment'] = pd.qcut(rfm['Monetary'], 3,
+                            labels=['Low Value', 'Medium Value', 'High Value'])
     return rfm
