@@ -10,6 +10,7 @@ import plotly.express as px
 
 from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
+from src.recommendation import recommend_products
 from auth.login import login
 
 st.markdown("""
@@ -183,7 +184,11 @@ if uploaded_file is not None:
         if st.button("Recommend"):
             st.write("Function loaded ✅")
             recs = recommend_products(df, customer_id)
-            st.write(recs)
+            if recs:
+                st.write("Recommended Products:")
+                st.write(recs)
+            else:
+                st.warning("⚠️ No recommendations found")
     
     elif page == "📈 Forecasting":
         st.title("📈 Sales Forecasting")

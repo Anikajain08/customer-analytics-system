@@ -1,31 +1,20 @@
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
-def recommend_products(df, customer_id, top_n=5):
+def recommend_products(df, customer_id):
 
-    df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
+    # filter customer data
+    customer_data = df[df['CustomerID'] == customer_id]
 
-    # create customer-product matrix
-    matrix = df.pivot_table(
-        index='CustomerID',
-        columns='StockCode',
-        values='TotalPrice',
-        aggfunc='sum',
-        fill_value=0
+    if customer_data.empty:
+        return ["No data found for this customer"]
+
+    # get top products
+    top_products = (
+        customer_data.groupby('Description')['Quantity']
+        .sum()
+        .sort_values(ascending=False)
+        .head(5)
     )
 
-    # compute similarity
-    similarity = cosine_similarity(matrix)
-    similarity_df = pd.DataFrame(similarity, index=matrix.index, columns=matrix.index)
-
-    if customer_id not in similarity_df.index:
-        return f"Customer ID {customer_id} not found"
-
-    # find similar customers
-    similar_users = similarity_df.loc[customer_id].sort_values(ascending=False)[1:6]
-    similar_ids = similar_users.index
-
-    # recommend products
-    recommended = matrix.loc[similar_ids].sum().sort_values(ascending=False)
-
-    return recommended.head(top_n)
+    return list(top_products.index)
