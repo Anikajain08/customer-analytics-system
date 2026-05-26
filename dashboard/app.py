@@ -18,45 +18,43 @@ from auth.login import login
 st.markdown("""
 <style>
 
-/* Sidebar background */
+/* 🌊 Main background (darker sea blue) */
+.stApp {
+    background-color: #0a1f2e;   /* darker blue */
+}
+
+/* Text color */
+.main {
+    color: #e0f2fe;
+}
+
+/* 🌊 Sidebar */
 [data-testid="stSidebar"] {
-    background-color: #111827;
+    background-color: #0f2a3d;   /* darker sidebar */
 }
 
 /* Sidebar text */
 [data-testid="stSidebar"] * {
-    color: #e5e7eb;
+    color: #e0f2fe;
 }
 
-/* Sidebar title */
-.sidebar-title {
-    font-size: 22px;
-    font-weight: bold;
-    color: #60a5fa;
-    margin-bottom: 20px;
-}
-
-/* Radio buttons styling */
-div[role="radiogroup"] label {
-    background: #1f2937;
+/* 🌊 KPI Cards */
+[data-testid="stMetric"] {
+    background-color: #12344d;
     padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    display: block;
-    transition: 0.3s;
+    border-radius: 10px;
+}
+
+/* 🌊 Buttons */
+.stButton > button {
+    background-color: #0284c7;
+    color: white;
+    border-radius: 10px;
 }
 
 /* Hover effect */
-div[role="radiogroup"] label:hover {
-    background: #374151;
-    cursor: pointer;
-}
-
-/* Selected option */
-div[role="radiogroup"] input:checked + div {
-    background: #2563eb !important;
-    color: white !important;
-    border-radius: 8px;
+.stButton > button:hover {
+    background-color: #0369a1;
 }
 
 </style>
