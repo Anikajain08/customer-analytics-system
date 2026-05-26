@@ -107,10 +107,7 @@ st.title("Customer Analytics Dashboard")
 uploaded_file = st.file_uploader("Upload Dataset")
 
 if uploaded_file is not None:
-    df = pd.read_excel(uploaded_file) 
-
-    # create TotalPrice
-    df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
+    df = load_data(uploaded_file)
 
     st.success("✅ Data uploaded successfully")
     
@@ -157,7 +154,9 @@ if uploaded_file is not None:
                     """, unsafe_allow_html=True)
     
     elif page == "👥 Segmentation":
-        rfm = segment_customers(df)
+        st.title("👥 Customer Segmentation")
+        with st.spinner("Processing..."):
+            rfm = segment_customers(df)
         
         if 'Segment' in rfm.columns:
             segment = rfm['Segment'].value_counts().reset_index()
@@ -174,8 +173,10 @@ if uploaded_file is not None:
     
     elif page == "🔄 Churn":
         st.title("🔄 Churn Prediction")
-        rfm = segment_customers(df)
-        churn_df = predict_churn(rfm)
+        
+        with st.spinner("Processing..."):
+            rfm = segment_customers(df)
+            churn_df = predict_churn(rfm)
 
         st.write(churn_df.head())
     
@@ -185,7 +186,9 @@ if uploaded_file is not None:
         
         if st.button("Recommend"):
             st.write("Function loaded ✅")
-            recs = recommend_products(df, customer_id)
+            
+            with st.spinner("Processing..."):
+                recs = recommend_products(df, customer_id)
             if recs:
                 st.write("Recommended Products:")
                 st.write(recs)
@@ -195,7 +198,8 @@ if uploaded_file is not None:
     elif page == "📈 Forecasting":
         st.title("📈 Sales Forecasting")
         
-        forecast = predict_sales(df)
+        with st.spinner("Processing..."):
+            forecast = predict_sales(df)
         
         if forecast is not None:
             st.write(forecast)
@@ -205,8 +209,9 @@ if uploaded_file is not None:
     elif page == "📦 Inventory":
         st.title("📦 Inventory Demand")
         
-        demand = predict_demand(df)
-        st.write(demand)
+        with st.spinner("Processing..."):
+            demand = predict_demand(df)
+            st.write(demand)
         
     else:
         st.info("ℹ️ Please upload dataset or check required columns")
