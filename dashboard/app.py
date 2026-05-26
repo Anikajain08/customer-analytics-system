@@ -109,6 +109,7 @@ uploaded_file = st.file_uploader("Upload Dataset")
 if uploaded_file is not None:
     df = pd.read_excel(uploaded_file)
     df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
+    df = df.head(3000)
     
     st.success("✅ Data uploaded successfully")
     
