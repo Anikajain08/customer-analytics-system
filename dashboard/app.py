@@ -169,4 +169,32 @@ if uploaded_file is not None:
         else:
             st.warning("⚠️ Segment column not found")
     
+    elif page == "🔄 Churn":
+        st.title("🔄 Churn Prediction")
+        rfm = segment_customers(df)
+        churn_df = predict_churn(rfm)
+
+        st.write(churn_df.head())
+    
+    elif page == "🎯 Recommendation":
+        st.title("🎯 Product Recommendation")
+        customer_id = st.number_input("Enter Customer ID", step=1)
         
+        if st.button("Recommend"):
+            recs = recommend_products(df, customer_id)
+            st.write(recs)
+    
+    elif page == "📈 Forecasting":
+        st.title("📈 Sales Forecasting")
+        
+        forecast = predict_sales(df)
+        st.write(forecast)
+    
+    elif page == "📦 Inventory":
+        st.title("📦 Inventory Demand")
+        
+        demand = predict_demand(df)
+        st.write(demand)
+        
+    else:
+        st.info("ℹ️ Please upload dataset or check required columns")
