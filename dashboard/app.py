@@ -18,19 +18,19 @@ from auth.login import login
 st.markdown("""
 <style>
 
-/* 🌊 Main background (darker sea blue) */
+/* 🌊 Main background (slightly darker) */
 .stApp {
-    background-color: #0a1f2e;   /* darker blue */
+    background-color: #0d2536;   /* slightly darker than before */
 }
 
-/* Text color */
+/* Text */
 .main {
     color: #e0f2fe;
 }
 
 /* 🌊 Sidebar */
 [data-testid="stSidebar"] {
-    background-color: #0f2a3d;   /* darker sidebar */
+    background-color: #123049;   /* slightly darker */
 }
 
 /* Sidebar text */
@@ -40,7 +40,7 @@ st.markdown("""
 
 /* 🌊 KPI Cards */
 [data-testid="stMetric"] {
-    background-color: #12344d;
+    background-color: #153a52;
     padding: 10px;
     border-radius: 10px;
 }
@@ -52,7 +52,7 @@ st.markdown("""
     border-radius: 10px;
 }
 
-/* Hover effect */
+/* Hover */
 .stButton > button:hover {
     background-color: #0369a1;
 }
