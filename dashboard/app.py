@@ -11,6 +11,7 @@ import plotly.express as px
 from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
 from src.recommendation import recommend_products
+from src.forecasting import predict_sales
 from auth.login import login
 
 st.markdown("""
@@ -194,7 +195,11 @@ if uploaded_file is not None:
         st.title("📈 Sales Forecasting")
         
         forecast = predict_sales(df)
-        st.write(forecast)
+        
+        if forecast is not None:
+            st.write(forecast)
+        else:
+            st.warning("⚠️ No forecast data available")
     
     elif page == "📦 Inventory":
         st.title("📦 Inventory Demand")
