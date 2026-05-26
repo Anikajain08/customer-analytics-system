@@ -12,6 +12,7 @@ from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
 from src.recommendation import recommend_products
 from src.forecasting import predict_sales
+from src.demand_prediction import predict_demand
 from auth.login import login
 
 st.markdown("""
