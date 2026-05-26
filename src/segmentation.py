@@ -1,9 +1,5 @@
-import pandas as pd
-import joblib
-
 # load model and scaler
 import os
-import joblib
 
 # get base directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +21,11 @@ def segment_customers(df):
 
     rfm.columns = ['CustomerID', 'Recency', 'Frequency', 'Monetary']
 
-    # 🔥 SIMPLE SEGMENTATION
-    rfm['Segment'] = pd.qcut(rfm['Monetary'], 3,
-                            labels=['Low Value', 'Medium Value', 'High Value'])
+    # 🔥 GUARANTEED SEGMENT COLUMN
+    rfm['Segment'] = pd.qcut(
+        rfm['Monetary'],
+        q=3,
+        labels=['Low Value', 'Medium Value', 'High Value']
+    )
+
     return rfm

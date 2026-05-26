@@ -113,5 +113,7 @@ if uploaded_file is not None:
     
     else:
         st.warning("⚠️ Segment column not found")
+        
+    st.write(rfm.head())
     
         
