@@ -91,13 +91,13 @@ if not st.session_state.logged_in:
     
     st.stop()
     
-    st.sidebar.markdown('<div class="sidebar-title">📊 Analytics Panel</div>', unsafe_allow_html=True)
-    page = st.sidebar.radio(
+st.sidebar.markdown('<div class="sidebar-title">📊 Analytics Panel</div>', unsafe_allow_html=True)
+page = st.sidebar.radio(
     "Navigate",
     ["🏠 Dashboard", "👥 Segmentation", "🔄 Churn", "🎯 Recommendation", "📈 Forecasting", "📦 Inventory"]
-    )
+)
 
-st.cache_data.clear()
+
 st.title("Customer Analytics Dashboard")
 
 # upload first
@@ -110,40 +110,42 @@ if uploaded_file is not None:
     df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
 
     st.success("✅ Data uploaded successfully")
-    st.title("📊 Customer Sales Dashboard")
     
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("💰 Total Sales", f"₹{df['TotalPrice'].sum():,.0f}")
-    col2.metric("📦 Orders", df['InvoiceNo'].nunique())
-    col3.metric("👤 Customers", df['CustomerID'].nunique())
-    col4.metric("📈 Avg Value", f"₹{df['TotalPrice'].mean():.2f}")
+    if page == "🏠 Dashboard":
+        st.title("📊 Customer Sales Dashboard")
     
-    st.markdown("---")
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("💰 Total Sales", f"₹{df['TotalPrice'].sum():,.0f}")
+        col2.metric("📦 Orders", df['InvoiceNo'].nunique())
+        col3.metric("👤 Customers", df['CustomerID'].nunique())
+        col4.metric("📈 Avg Value", f"₹{df['TotalPrice'].mean():.2f}")
+        
+        st.markdown("---")
+        
+        
+        df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
+        df['Month'] = df['InvoiceDate'].dt.to_period('M').astype(str)
     
-    # 📊 Data Prep
-    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
-    df['Month'] = df['InvoiceDate'].dt.to_period('M').astype(str)
+        monthly = df.groupby('Month')['TotalPrice'].sum().reset_index()
+        country = df.groupby('Country')['TotalPrice'].sum().reset_index()
     
-    monthly = df.groupby('Month')['TotalPrice'].sum().reset_index()
-    country = df.groupby('Country')['TotalPrice'].sum().reset_index()
+        # 📈 Charts
+        fig1 = px.line(monthly, x='Month', y='TotalPrice', title="Monthly Sales")
+        fig2 = px.bar(country.head(10), x='Country', y='TotalPrice', title="Sales by Country")
     
-    # 📈 Charts
-    fig1 = px.line(monthly, x='Month', y='TotalPrice', title="Monthly Sales")
-    fig2 = px.bar(country.head(10), x='Country', y='TotalPrice', title="Sales by Country")
+        fig1.update_layout(template="plotly_dark")
+        fig2.update_layout(template="plotly_dark")
     
-    fig1.update_layout(template="plotly_dark")
-    fig2.update_layout(template="plotly_dark")
+        # 🔥 Layout (Main + Side Panel)
+        col1, col2 = st.columns([3,1])
     
-    # 🔥 Layout (Main + Side Panel)
-    col1, col2 = st.columns([3,1])
+        with col1:
+            st.plotly_chart(fig1, use_container_width=True)
+            st.plotly_chart(fig2, use_container_width=True)
     
-    with col1:
-        st.plotly_chart(fig1, use_container_width=True)
-        st.plotly_chart(fig2, use_container_width=True)
-    
-    with col2:
-        st.markdown("### 👤 Profile")
-        st.markdown("""
+        with col2:
+            st.markdown("### 👤 Profile")
+            st.markdown("""
                     <div style="background:#1c1f26;padding:15px;border-radius:10px;">
                     <h4>User: Admin</h4>
                     <p>Role: Analyst</p>
@@ -151,20 +153,20 @@ if uploaded_file is not None:
                     </div>
                     """, unsafe_allow_html=True)
     
-    rfm = segment_customers(df)
-    
-    if 'Segment' in rfm.columns:
-        segment = rfm['Segment'].value_counts().reset_index()
-        segment.columns = ['Segment', 'Count']
+    elif page == "👥 Segmentation":
+        rfm = segment_customers(df)
         
-        fig3 = px.pie(segment, names='Segment', values='Count',
+        if 'Segment' in rfm.columns:
+            segment = rfm['Segment'].value_counts().reset_index()
+            segment.columns = ['Segment', 'Count']
+            fig3 = px.pie(segment, names='Segment', values='Count',
                   title="Customer Segmentation")
+            
+            fig3.update_layout(template="plotly_dark")
         
-        fig3.update_layout(template="plotly_dark")
-        
-        st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, use_container_width=True)
     
-    else:
-        st.warning("⚠️ Segment column not found")
+        else:
+            st.warning("⚠️ Segment column not found")
     
         
