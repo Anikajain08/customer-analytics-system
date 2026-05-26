@@ -181,6 +181,7 @@ if uploaded_file is not None:
         customer_id = st.number_input("Enter Customer ID", step=1)
         
         if st.button("Recommend"):
+            st.write("Function loaded ✅")
             recs = recommend_products(df, customer_id)
             st.write(recs)
     
