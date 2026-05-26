@@ -12,6 +12,53 @@ from src.segmentation import segment_customers
 from src.churn_prediction import predict_churn
 from auth.login import login
 
+st.markdown("""
+<style>
+
+/* Sidebar background */
+[data-testid="stSidebar"] {
+    background-color: #111827;
+}
+
+/* Sidebar text */
+[data-testid="stSidebar"] * {
+    color: #e5e7eb;
+}
+
+/* Sidebar title */
+.sidebar-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #60a5fa;
+    margin-bottom: 20px;
+}
+
+/* Radio buttons styling */
+div[role="radiogroup"] label {
+    background: #1f2937;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: block;
+    transition: 0.3s;
+}
+
+/* Hover effect */
+div[role="radiogroup"] label:hover {
+    background: #374151;
+    cursor: pointer;
+}
+
+/* Selected option */
+div[role="radiogroup"] input:checked + div {
+    background: #2563eb !important;
+    color: white !important;
+    border-radius: 8px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 # session state
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -43,6 +90,12 @@ if not st.session_state.logged_in:
             st.warning("Signup disabled in cloud version. Use demo credentials below.")
     
     st.stop()
+    
+    st.sidebar.markdown('<div class="sidebar-title">📊 Analytics Panel</div>', unsafe_allow_html=True)
+    page = st.sidebar.radio(
+    "Navigate",
+    ["🏠 Dashboard", "👥 Segmentation", "🔄 Churn", "🎯 Recommendation", "📈 Forecasting", "📦 Inventory"]
+    )
 
 st.cache_data.clear()
 st.title("Customer Analytics Dashboard")
