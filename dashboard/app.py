@@ -107,8 +107,9 @@ st.title("Customer Analytics Dashboard")
 uploaded_file = st.file_uploader("Upload Dataset")
 
 if uploaded_file is not None:
-    df = load_data(uploaded_file)
-
+    df = pd.read_excel(uploaded_file)
+    df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
+    
     st.success("✅ Data uploaded successfully")
     
     if page == "🏠 Dashboard":
