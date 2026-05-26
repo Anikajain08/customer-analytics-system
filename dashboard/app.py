@@ -18,43 +18,28 @@ from auth.login import login
 st.markdown("""
 <style>
 
-/* 🌊 Main background (slightly darker) */
+/* 🌊 Match full background (no layout change) */
 .stApp {
-    background-color: #0d2536;   /* slightly darker than before */
+    background-color: #0d2536;
 }
 
-/* Text */
-.main {
-    color: #e0f2fe;
+/* Fix top black strip ONLY */
+header {
+    background-color: #0d2536 !important;
 }
 
-/* 🌊 Sidebar */
+[data-testid="stHeader"] {
+    background-color: #0d2536 !important;
+}
+
+/* Keep your existing sidebar color */
 [data-testid="stSidebar"] {
-    background-color: #123049;   /* slightly darker */
+    background-color: #123049;
 }
 
-/* Sidebar text */
-[data-testid="stSidebar"] * {
+/* Keep text readable */
+body {
     color: #e0f2fe;
-}
-
-/* 🌊 KPI Cards */
-[data-testid="stMetric"] {
-    background-color: #153a52;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-/* 🌊 Buttons */
-.stButton > button {
-    background-color: #0284c7;
-    color: white;
-    border-radius: 10px;
-}
-
-/* Hover */
-.stButton > button:hover {
-    background-color: #0369a1;
 }
 
 </style>
