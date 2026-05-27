@@ -20,12 +20,12 @@ st.markdown("""
 
 /* 🌊 Match full background (no layout change) */
 .stApp {
-    background-color: #0d2536;
+    background-color: #0F3448;
 }
 
 /* Fix top black strip ONLY */
 header {
-    background-color: #0d2536 !important;
+    background-color: #0F3448 !important;
 }
 
 [data-testid="stHeader"] {
